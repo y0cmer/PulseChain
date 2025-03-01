@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseChain - Cryptocurrency Trading Platform</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #121212;
+            color: #f1f1f1;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        header {
+            background-color: #212121;
+            padding: 15px 20px;
+            border-bottom: 3px solid #ffcc00;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav h1 {
+            color: #ffcc00;
+            font-weight: bold;
+            margin: 0;
+        }
+        nav button {
+            background-color: #ffcc00;
+            border: none;
+            color: #212121;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        nav button:hover {
+            background-color: #e6b800;
+        }
+        .ticker-wrapper {
+            background-color: #ffcc00;
+            color: #212121;
+            padding: 10px 0;
+            font-weight: bold;
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .ticker-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 10s linear infinite;
+        }
+        @keyframes ticker {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+        .main-banner {
+            position: relative;
+            text-align: left;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            height: 400px;
+            background: url('background.jpg') no-repeat center center;
+            background-size: cover;
+        }
+        .main-banner h5 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 10px;
+        }
+        .main-banner p {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .register-btn {
+            background-color: #ffcc00;
+            color: #212121;
+            border: none;
+            padding: 15px 25px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+            align-self: flex-start;
+        }
+        .register-btn:hover {
+            background-color: #e6b800;
+        }
+        .footer {
+            background-color: #212121;
+            padding: 20px;
+            text-align: center;
+            margin-top: 50px;
+        }
+        .footer a {
+            color: #ffcc00;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+        .crypto-prices {
+            margin-top: 10px;
+        }
+
+    .crypto-prices {
+        margin: 20px;
+        padding: 20px;
+        background-color: #1e1e1e;
+        border-radius: 10px;
+    }
+
+    #price-table {
+        width: 100%;
+        color: #f1f1f1;
+    }
+
+    #price-table th {
+        background-color: #333;
+        padding: 10px;
+        text-align: left;
+    }
+
+    #price-table td {
+        padding: 10px;
+        border-bottom: 1px solid #444;
+    }
+
+    #price-table tr:hover {
+        background-color: #2a2a2a;
+    }
+    .card-container {
+    display: flex;
+    justify-content: center; /* Вирівнює карточки по центру горизонтально */
+    align-items: center; /* Вирівнює карточки по центру вертикально */
+    gap: 20px; /* Відступ між карточками */
+    padding: 20px; /* Відступ від країв контейнера */
+    background-color: #121212; /* Колір фону контейнера */
+}
+
+.card {
+    width: 300px; /* Фіксована ширина карточки */
+    background-color: #1e1e1e;
+    border: 1px solid #444;
+    border-radius: 10px;
+    color: #f1f1f1;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    text-align: center; /* Вирівнює текст по центру */
+    padding: 20px; /* Відступи всередині карточки */
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(255, 204, 0, 0.2);
+}
+
+.card h2 {
+    color: #ffcc00;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.card p {
+    color: #ccc;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.card button {
+    background-color: #ffcc00;
+    color: #212121;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.card button:hover {
+    background-color: #e6b800;
+}
+
+    </style>
+</head>
+<body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <header>
+        <nav>
+            <h1>PulseChain</h1>
+            <button onclick="goToPage('Buycrypto')">BUY CRYPTO</button>
+            <button onclick="goToPage('SPOT')">SPOT</button>
+            <button onclick="goToPage('futures')">FUTURES</button>
+            <button onclick="goToPage('finance')">FINANCE</button>
+        </nav>
+    </header>
+    <div class="main-banner text-bg-dark">
+        <h5>НОВИЙ РІВЕНЬ</h5>
+        <p>ТОРГІВЛЯ | ІНВЕСТИЦІЇ | НАВЧАННЯ</p>
+        <p><small>Отримуй до 50$ при реєстрації</small></p>
+        <button class="register-btn">ЗАРЕЄСТРУВАТИСЯ</button>
+    </div>
+    <div class="ticker-wrapper">
+        <span class="ticker-text">🔥 Новий рівень торгівлі! Отримай бонус 50$ при реєстрації! 🔥</span>
+    </div>
+    <div class="crypto-prices">
+        <h3>Real-Time Crypto Prices</h3>
+        <table id="price-table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr>
+                    <th style="padding: 10px; border-bottom: 1px solid #ffcc00;">Символ</th>
+                    <th style="padding: 10px; border-bottom: 1px solid #ffcc00;">Ціна</th>
+                    <th style="padding: 10px; border-bottom: 1px solid #ffcc00;">Зміна за 24 години</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Тут будуть відображатися ціни -->
+            </tbody>
+        </table>
+    </div>
+    <div class="card-container">
+        <div class="card">
+            <h2>1</h2>
+            <h3>Створити акаунт</h3>
+            <p>Введіть адресу електронної пошти та перевірте вхідні, куди надійде код підтвердження з 6 цифр. Щоб завершити реєстрацію, просто введіть код на сторінці підтвердження.</p>
+            <button>Зареєструватися</button>
+        </div>
+        <div class="card">
+            <h2>2</h2>
+            <h3>Внести депозит</h3>
+            <p>Ви можете легко увійти в акаунт на вебсайті або в застосунку PulseChain.</p>
+            <button>Внести депозит</button>
+        </div>
+        <div class="card">
+            <h2>3</h2>
+            <h3>Почати торгувати!</h3>
+            <p>Почніть торгувати улюбленими спотовими парами або ф’ючерсними контрактами!</p>
+            <button>Торгувати</button>
+        </div>
+    </div>
+    <footer class="footer">
+        <p>&copy; 2025 PulseChain. Всі права захищені.</p>
+        <a href="#">Політика конфіденційності</a>
+        <a href="#">Умови використання</a>
+        <a href="#">Контакти</a>
+        <p>Було створенно за ідеєю Bybit</p>
+        <p>Зв'язатися з нами: pulsechainsup@gmail.com | Телефон: +380 68 691 77 13</p>
+        <script>
+            // Підключення до WebSocket
+            const ws = new WebSocket('ws://localhost:8000/ws');
+        
+            ws.onmessage = function(event) {
+                const prices = JSON.parse(event.data);
+                const priceTableBody = document.querySelector("#price-table tbody");
+                priceTableBody.innerHTML = ''; // Очистити попередні дані
+        
+                // Додати нові дані до таблиці
+                for (const [symbol, data] of Object.entries(prices)) {
+                    const row = document.createElement('tr');
+        
+                    // Символ
+                    const symbolCell = document.createElement('td');
+                    symbolCell.textContent = symbol;
+                    symbolCell.style.padding = '10px';
+                    symbolCell.style.borderBottom = '1px solid #444';
+        
+                    // Ціна
+                    const priceCell = document.createElement('td');
+                    priceCell.textContent = `$${data.price}`;
+                    priceCell.style.padding = '10px';
+                    priceCell.style.borderBottom = '1px solid #444';
+        
+                    // Зміна за 24 години
+                    const changeCell = document.createElement('td');
+                    changeCell.textContent = `${data.change_24h.toFixed(2)}%`;
+                    changeCell.style.padding = '10px';
+                    changeCell.style.borderBottom = '1px solid #444';
+                    changeCell.style.color = data.change_24h >= 0 ? '#4CAF50' : '#F44336';  // Зелений для зростання, червоний для падіння
+        
+                    // Додаємо комірки до рядка
+                    row.appendChild(symbolCell);
+                    row.appendChild(priceCell);
+                    row.appendChild(changeCell);
+        
+                    // Додаємо рядок до таблиці
+                    priceTableBody.appendChild(row);
+                }
+            };
+        
+            ws.onerror = function(error) {
+                console.error('WebSocket error:', error);
+            };
+        
+            ws.onclose = function() {
+                console.log('WebSocket connection closed');
+            };
+        </script>
+        
+
+    </footer>
+    <script>
+        function goToPage(page) {
+            window.location.href = `/${page}`;
+        }
+    </script>
+</body>
+</html>

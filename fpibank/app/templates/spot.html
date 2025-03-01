@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Futures Trading - Bybit Style</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #121212; color: white; }
+        .container { max-width: 1200px; margin-top: 20px; }
+        .order-panel { background: #1e1e1e; padding: 20px; border-radius: 8px; }
+        .price-box { font-size: 24px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">SPOT Trading - BTC/USDT</h2>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="order-panel">
+                    <h4>Live BTC Price: <span id="btc-price" class="price-box">Loading...</span></h4>
+                    <canvas id="priceChart"></canvas>
+                    <br>
+                    <button onclick="toggleOrderType('Limit')" class="btn btn-primary">Limit</button>
+                    <button onclick="toggleOrderType('Market')" class="btn btn-secondary">Market</button>
+
+                    <label id="entry-price-label">Entry Price:</label>
+                    <input type="number" id="entry-price" class="form-control" value="40000" disabled>
+
+                    <label>Quantity (BTC):</label>
+                    <input type="range" id="quantity" min="0.000001" max="0.01" step="0.000001" value="0.000001" class="form-range" oninput="updateQuantity()">
+                    <span id="quantity-value">0.000001 BTC</span>
+
+                    <br>
+                    <label>Order Value (USDT):</label>
+                    <input type="number" id="order-value" class="form-control" value="">
+                    <br>
+                    
+                    <button class="btn btn-success w-100" onclick="placeTrade('Buy')">Buy</button>
+                    <button class="btn btn-danger w-100 mt-2" onclick="placeTrade('Sell')">Sell</button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4>Open Positions</h4>
+                <ul id="positions-list" class="list-group"></ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        let priceChart;
+
+        function updateQuantity() {
+            const entryPrice = parseFloat(document.getElementById("entry-price").value);
+            const balance = 20000.0;  // Баланс для обчислення кількості
+            const maxQuantity = balance / entryPrice;
+            const quantityInput = document.getElementById("quantity");
+            quantityInput.max = maxQuantity.toFixed(6);
+            document.getElementById('quantity-value').innerText = quantityInput.value + ' BTC';
+        }
+
+        function connectWebSocket() {
+            const ws = new WebSocket("ws://localhost:8000/ws/main");
+            ws.onmessage = function(event) {
+                const data = JSON.parse(event.data);
+                document.getElementById("btc-price").innerText = `$${data.BTCUSDT}`;
+                document.getElementById("entry-price").value = data.BTCUSDT;
+                updateChart(data.BTCUSDT);
+                updateQuantity();  // Оновлення кількості BTC
+            };
+        }
+
+        function toggleOrderType(type) {
+            const entryPriceInput = document.getElementById("entry-price");
+            const entryPriceLabel = document.getElementById("entry-price-label");
+            const quantityInput = document.getElementById("quantity");
+            const orderValueInput = document.getElementById("order-value");
+
+            if (type === "Limit") {
+                entryPriceInput.disabled = false;
+                entryPriceInput.value = "";  // Очищаємо значення при виборі "Limit"
+                orderValueInput.disabled = false;
+                quantityInput.disabled = false;
+                entryPriceInput.style.display = 'block'; // Відображаємо input для Limit
+                entryPriceLabel.style.display = 'block'; // Відображаємо label для Limit
+            } else {
+                entryPriceInput.disabled = true;
+                orderValueInput.disabled = true;
+                quantityInput.disabled = false; // Для "Market" кількість має бути активною
+                entryPriceInput.value = "";  // Очищаємо поле при натисканні "Market"
+                entryPriceInput.style.display = 'none'; // Приховуємо input для Market
+                entryPriceLabel.style.display = 'none'; // Приховуємо label для Market
+            }
+        }
+
+        async function placeTrade(type) {
+            const entryPrice = type === 'Market' ? parseFloat(document.getElementById("btc-price").innerText.replace('$', '')) : parseFloat(document.getElementById("entry-price").value);
+            const quantity = parseFloat(document.getElementById("quantity").value);
+
+            const tradeData = {
+                trade_type: type,
+                entry_price: entryPrice,
+                quantity: quantity,
+            };
+
+            console.log("Sending trade data:", tradeData);
+
+            try {
+                const response = await axios.post("http://localhost:8000/trade", tradeData, {
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                console.log("Trade Response:", response.data);
+                loadPositions();
+            } catch (error) {
+                console.error("Error placing trade:", error.response?.data?.detail || error);
+            }
+        }
+
+        function updateChart(price) {
+            if (!priceChart) {
+                const ctx = document.getElementById('priceChart').getContext('2d');
+                priceChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'BTC Price',
+                            data: [],
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: { display: false },
+                            y: { beginAtZero: false }
+                        }
+                    }
+                });
+            }
+            const labels = priceChart.data.labels;
+            const data = priceChart.data.datasets[0].data;
+            labels.push(new Date().toLocaleTimeString());
+            data.push(price);
+            if (labels.length > 20) {
+                labels.shift();
+                data.shift();
+            }
+            priceChart.update();
+        }
+
+        connectWebSocket();  // Підключення до WebSocket
+    </script>
+</body>
+</html>

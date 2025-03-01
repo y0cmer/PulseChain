@@ -1,0 +1,17 @@
+# Вибір базового образу Python
+FROM python:3.9-slim
+
+# Встановлення робочої директорії всередині контейнера
+WORKDIR /app
+
+# Копіюємо файл з вимогами
+COPY requirements.txt .
+
+# Встановлюємо всі залежності
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Копіюємо весь код проекту
+COPY . .
+
+# Вказуємо команду для запуску FastAPI через Uvicorn
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
